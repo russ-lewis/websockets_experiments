@@ -1,0 +1,71 @@
+<html>
+<head><title>Tic-Tac-Toe</title></head>
+
+<body>
+
+<font size="+1"><b>Game {{gameID}}:</b> {{players[0]}} (X) vs. {{players[1]}} (O)</font>
+
+<p><b>Size:</b> {{size}}x{{size}}
+
+<p><b>State:</b> {{state}}
+
+<p><b>Next to Play:</b> {{nextToPlay}}
+<br><b>You Are:</b> {{thisPlayer}}
+
+<script>
+  ws = new WebSocket("ws://elastic.ec2.private/ws");
+
+  ws.onopen = () => {
+      console.log("websocket is open!");
+      ws.send("{{gameID}}");
+  }
+
+  ws.onmessage = (msg) => {
+      console.log("Message received: '%s'", msg);
+      if (msg == "{{gameID}}")
+          window.location.reload(true);    // this is a real hack, later I should update the Javascript to update the page contents!
+      else
+          console.log("Error; the websocket message didn't seem to apply to this page!  Is the server confused?");
+  }
+
+  ws.onclose = () => {
+      console.log("Websocket closed");
+  }
+</script>
+
+<p>
+<form action="{{url_for("move")}}" method="post">
+  <input type=hidden name="user" value="{{thisPlayer}}">
+  <input type=hidden name="game" value="{{gameID}}">
+
+<!--
+  <input type=button value="Click me!" onclick="ws.send('spurious message...');">
+  -->
+
+<table border=2>
+
+  {% for y in range(size) %}  <!-- loop over the rows --> 
+  <tr height=50 valign=enter>
+
+    {% for x in range(size) %}  <!-- loop over the columns of row {{x+1}} -->
+      {% if board[x][y] != "" %}
+        <td width=50 align=center>{{board[x][y]}}</td>
+      {% elif canPlay == False %}
+        <td width=50 align=center></td>
+      {% elif board[x][y] != "" %}
+        <td width=50 align=center><button type=submit name="pos" value="{{x+1}},{{y+1}}" style="height:50px;width:50px"></button></td>
+      {% endif %}
+    {% endfor %}
+
+  </tr>
+  {% endfor %}
+
+</table>
+
+{% if canPlay %}
+<p><input type=submit value="Resign" name="resign">
+{% endif %}
+
+</body>
+</html>
+

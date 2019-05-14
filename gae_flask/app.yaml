@@ -1,0 +1,15 @@
+# DERIVED FROM GOOGLE'S WEBSOCKET GAE EXAMPLE
+#     https://cloud.google.com/appengine/docs/flexible/python/using-websockets-and-session-affinity
+#     git clone https://github.com/GoogleCloudPlatform/python-docs-samples
+
+
+
+runtime: python
+env: flex
+
+# Use a special gunicorn worker class to support websockets.
+entrypoint: gunicorn -b :$PORT -k flask_sockets.worker russ_websocket_experiements:app
+
+runtime_config:
+  python_version: 3
+

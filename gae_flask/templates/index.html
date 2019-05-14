@@ -3,7 +3,46 @@
 
 <body>
 
-<a href="{{url_for("game")}}?game=1234&user=Russ">test a game</a>
+<p>
+<font size="+1"><b>Active Games</b></font>
+
+<br>
+<table border=1>
+  <tr><td><b>ID</b></td> <td><b>Players</b></td> <td><b>Size</b></td> 
+
+{% if user is defined %}
+      <td></td>    <!-- this column for the 'play' buttons, as appropriate for this user -->
+{% else %}
+      <td rowspan={{1+games|length}}" valign=center><form action="{{url_for("login")}}"><input type=submit value="Login"></form></td>
+{% endif %}
+
+  </tr>
+
+{% for g in games %}
+
+  {% if g[0] in highlight %}
+<font color=red><b>    <!-- highlighted game -->
+  {% endif %}
+
+  <tr><td>{{g[0]}}</td>
+      <td>{{g[1]}}, {{g[2]}}</td>
+      <td>{{g[3]}}x{{g[3]}}</td>
+{% if user is defined %}
+  {% if user in players %}
+        <td> <a href="{{url_for("game")}}?user={{user}}&game={{g[0]}}">Play!</a> </td>
+  {% else %}
+        <td></td>
+  {% endif %}
+{% endif %}
+      </tr> 
+
+  {% if g[0] in highlight %}
+</b></font>
+  {% endif %}
+
+{% endfor %}
+
+</table>
 
 </body>
 </html>

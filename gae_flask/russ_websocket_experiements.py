@@ -27,10 +27,36 @@ def open_db():
 
 
 
+@app.route("/login")
+def login():
+    return ""
+
+
 @app.route("/")
 def index():
-    print("TODO: implement the full index lookup!")
-    return render_template("index.html");
+    # we have only one variable, and that's optional: it tells us which
+    # game(s) to highlight.
+    #
+    # TODO: we'd like to support a list, later on.  For now, this
+    #       variable-reading code only reads a single variable, even if it
+    #       stores the result as a list, and when we read the variable, we
+    #       treat it as a list of IDs.
+    if "hightlight" in request.values:
+        highlight = [ int(request.values["highlight"]) ]
+    else:
+        highlight = []
+    
+
+    # connect to the database, then read the game state
+    conn = open_db()
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT id,player1,player2,size FROM games WHERE state IS NULL;")
+    games = cursor.fetchall()
+    cursor.close();
+
+    return render_template("index.html",
+                           games=games);
 
 
 @app.route("/game.html")
